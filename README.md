@@ -1,46 +1,36 @@
-# tron-brute
+# TRON 私钥模板暴力搜索工具
 
-TRON 私钥暴力破解工具 — 用 Rust 实现，基于 `k256` (secp256k1) + `tiny-keccak` (Keccak-256)。
+## 两个版本
 
-## 用途
+### 1. 高性能版（推荐）— 使用 k256 + tiny-keccak
+- 源码：`main.rs` + `Cargo.toml`
+- 预编译 Linux x64 二进制：`tron_brute_linux_x64`（约 6.8 MB）
+- 实测（2 核）：约 **35,000 key/s**（单核约 1.7 万）
+- 需要：Rust 1.70+ 编译，或直接跑预编译二进制
 
-在已知私钥片段（含未知位 `?`）的情况下，通过暴力枚举恢复完整私钥。
-用于 [30million.love](https://30million.love) 寻宝挑战。
-
-## 用法
-
+编译：
 ```bash
-# 编译
-cargo build --release
-
-# 运行（模板中 ? 表示未知位）
-./target/release/tron_brute <模板64位hex> <TRON地址> [线程数]
-
-# 示例：测试已知私钥 k=1
-./target/release/tron_brute \
-  0000000000000000000000000000000000000000000000000000000000000001 \
-  TMVQGm1qAQYVdetCeGRRkTWYYrLXtD3qmc
-
-# 示例：暴力破解 4 个未知位
-./target/release/tron_brute \
-  f62ef022b46823e1f??????????cf28e557037a26694e064 \
-  TGXFM77n7Ekh8d2V51uPRrTgNbo7ipZQ5L \
-  16
+RUSTFLAGS="-C target-cpu=native" cargo build --release
+./target/release/tron_brute <模板> <TRON地址> [线程数]
 ```
 
-## 性能
+### 2. 纯手写版（无外部依赖）— pure_no_deps/
+- 零依赖，可直接 cargo build
+- 速度约 160–330 key/s（2 核），正确性已验证
+- 适合无网络或学习用途
 
-- 单线程: ~8,000 key/s
-- 16 线程: ~8,000 key/s (受内存带宽限制)
-- 最大可处理: ≤15 个未知位 (16^15 ≈ 1.15×10^18)
+## 用法（两个版本相同）
 
-## 测试
-
-```bash
-cargo test
+```
+tron_brute <模板64位hex,?未知> <TRON地址> [线程数]
 ```
 
-## 依赖
+示例：
+```
+./tron_brute_linux_x64 000000000000000000000000000000000000000000000000000000000000000? TMVQGm1qAQYVdetCeGRRkTWYYrLXtD3qmc 8
+```
 
-- [k256](https://crates.io/crates/k256) — secp256k1 椭圆曲线运算
-- [tiny-keccak](https://crates.io/crates/tiny-keccak) — Keccak-256 哈希
+## 注意
+- 缺位建议 ≤ 8（CPU），更多请用 GPU 工具
+- 预编译二进制仅限 Linux x86_64
+- Windows/macOS 请自行 cargo build --release

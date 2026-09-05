@@ -4,11 +4,13 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-k256 = { version = "0.13", features = ["ecdsa", "arithmetic"] }
-tiny-keccak = { version = "2", features = ["keccak"] }
-hex = "0.4"
+k256 = { version = "=0.13.3", default-features = false, features = ["arithmetic", "ecdsa"] }
+tiny-keccak = { version = "=2.0.2", features = ["keccak"] }
+# pin zeroize and others that might pull edition2024
+zeroize = { version = "=1.7.0", default-features = false }
 
 [profile.release]
-opt-level = 3
 lto = true
 codegen-units = 1
+opt-level = 3
+panic = "abort"
