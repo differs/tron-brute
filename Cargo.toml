@@ -1,0 +1,14 @@
+[package]
+name = "tron_brute"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+k256 = { version = "0.13", features = ["ecdsa", "arithmetic"] }
+tiny-keccak = { version = "2", features = ["keccak"] }
+hex = "0.4"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
